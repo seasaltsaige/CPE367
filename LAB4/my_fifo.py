@@ -17,43 +17,29 @@ class my_fifo:
 		self.buff_len = buff_len
 		self.buff = []
 		for k in range(buff_len): self.buff.append(0)
-		
-		# initialize more stuff, if needed	
+		# initialize more stuff, as needed	
 	
 	 
 	############################################
 	# update history with newest input and advance head / tail
 	def update(self,current_in):
-		"""
-		:current_in: a new input value to add to recent history
-		:return: T/F with any error message
-		"""
-
-		# students - need to make space for newest sample and include it in history
 		
-		# students - this is not the correct implementation!
-		self.buff[0] = current_in
+		# Pop oldest value
+		self.buff.pop(0)
+		# Apped new value at end
+		self.buff.append(current_in)
 		
 		return True
 
 	
 
 	############################################
-	# get value in history at a given age, specified by age_indx
-	#  age_indx == 0  ->  most recent
-	#  age_indx == 1  ->  
+	# get value from the recent history, specified by age_indx
 	def get(self,age_indx):
-		"""
-		:indx: an index in the history
-			age_indx == 0    ->  most recent historical value
-			age_indx == 1    ->  next most recent historical value
-			age_indx == M-1  ->  oldest historical value
-		:return: value stored in the list of historical values, as requested by indx 
-		"""
-		
-		# students - this is not the correct implementation!
-		val = self.buff[0]
+
+		# Newest value lives at M - 1
+		# Oldest value lives at 0
+		# Getting newest index should get M - 1, when age_indx = 0
+		val = self.buff[self.buff_len - age_indx - 1]
 		
 		return val
-
-

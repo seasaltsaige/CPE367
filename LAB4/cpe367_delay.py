@@ -2,7 +2,7 @@
 
 import sys
 import time
-
+import math
 import base64
 import random as random
 
@@ -36,7 +36,7 @@ def process_wav(fpath_wav_in,fpath_wav_out):
 		return False
 		
 	# setup configuration for output WAV
-	num_channels = 2
+	num_channels = 1
 	sample_width_8_16_bits = 16
 	sample_rate_hz = 16000
 	wav_out.set_wav_out_configuration(num_channels,sample_width_8_16_bits,sample_rate_hz)
@@ -50,18 +50,23 @@ def process_wav(fpath_wav_in,fpath_wav_out):
 	###############################################################
 	###############################################################
 	# students - allocate your fifo, with an appropriate length (M)
-	M = 3				# length 3 is not appropriate!
+	
+	M = 2000
 	fifo = my_fifo(M)
  
 	# students - allocate filter coefficients as needed, length (M)
 	# students - these are not the correct filter coefficients
-	bk_list = [1, 0, 0]
+	# bk_list = [1, 0, 0]
+
+
 	
 	###############################################################
 	###############################################################
 
 	# process entire input signal
 	xin = 0
+	# yout_past = 0
+	sample_counter = 0
 	while xin != None:
 	
 		# read next sample (assumes mono WAV file)
@@ -75,12 +80,55 @@ def process_wav(fpath_wav_in,fpath_wav_out):
 		# students - there is work to be done here!
 		
 		# update history with most recent input
-		fifo.update(xin)
+		yout = 0
+		# At time = 0, delay should be 0, and left should be delayed 10 samples
+		# As time (samples) progress, delay should increase to 10, making left delay 0
+		# and right delay 10
+
+		# Samples in 4 seconds: 64000
+		# Sample rate 16kHz
+		# 
+
+		# delay = 1
+		# delay = (round(sample_counter * 4 / four_seconds) )
+
+#     fifo.update(xin)
+# 			yout = 0
+
+
+# 		if sample_counter >= M:
+# 		yout = 0.5 * fifo.get(0) + 0.5 * fifo.get(M - 1)
+# 		else:
+# 			yout = 1 * fifo.get(0)
+#     yout = int(round(yout)) 
+
+
+		if sample_counter >= M:
+			yout = 0.5 * xin + 0.5 * fifo.get(M - 1)
+
+		else:
+			yout = 1 * xin
+
+		fifo.update(yout)
+
+		# if sample_counter >= four_seconds:
+		# 	delay = M - 1
+		# # evaluate your difference equation	to yield the desired effect!
+		# #  this example just copies the mono input into the left and right channel
+		# yout_left = 0
+		# yout_right = 0
 		
-		# evaluate your difference equation	to yield the desired effect!
-		#  this example just copies the mono input into the left and right channel
-		yout_left = xin
-		yout_right = xin
+		# yout_right = fifo.get(0 + (M - delay - 1))
+
+		# fifo.get(delay)
+
+		# yout_left = fifo.get(delay)
+
+		# if sample_counter >= four_seconds:
+		# 	yout_left = fifo.get(M-1)
+		
+		
+		# yout_left = fifo.get(0)
 		
 		# students - well done!
 		###############################################################
@@ -88,11 +136,11 @@ def process_wav(fpath_wav_in,fpath_wav_out):
 
 
 		# convert to signed int
-		yout_left = int(round(yout_left))
-		yout_right = int(round(yout_right))
+		yout = int(round(yout))
 		
 		# output current sample
-		ostat = wav_out.write_wav_stereo(yout_left,yout_right)
+		ostat = wav_out.write_wav(yout)
+		sample_counter = sample_counter + 1
 		if ostat == False: break
 	
 	# close input and output files

@@ -55,9 +55,11 @@ def process_wav(fpath_wav_in,fpath_wav_out):
 	# students - these are not the correct filter coefficients
 	bk_list = [1, 2, 3]
 	'''
-	xprev = 0
-	xprev2 = 0
-	
+
+	M = 11
+	fifo = my_fifo(M)
+	bk = 1/M
+
 	###############################################################
 	###############################################################
 
@@ -74,7 +76,22 @@ def process_wav(fpath_wav_in,fpath_wav_out):
 		###############################################################
 		###############################################################
 		# students - go to work!
-		
+
+		yout = 0
+	
+
+		# yout = 0;
+		# for k in range(M):
+		# 	xprev2 = xprev
+		# 	xprev = xin * a0
+		# 	xin = xin * a0
+
+			# print()
+
+		fifo.update(xin)
+		for k in range(M):
+			yout += fifo.get(k) * bk
+
 		'''
 		# update history with most recent input
 		fifo.update(xin)
@@ -89,7 +106,7 @@ def process_wav(fpath_wav_in,fpath_wav_out):
 		'''
 		
 		# evaluate difference equ, here as y[n] = x[n]
-		yout = xin
+		# yout = xin
 		
 		# update history of recent inputs...
 		# xprev = ...
